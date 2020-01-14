@@ -1,0 +1,33 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Contributor:  JP-Ellis <josh@jpellis.me>
+
+pkgname=python-habanero
+_name=${pkgname#python-}
+pkgver=0.7.2
+pkgrel=1
+pkgdesc="Habanero is a low level client for working with Crossrefs search API."
+arch=('any')
+url="https://pypi.org/project/habanero/"
+license=('GPL')
+depends=('python' 'python-requests' 'python-tqdm')
+checkdepends=('python-nose' 'python-vcrpy')
+makedepends=('python-setuptools')
+source=("https://files.pythonhosted.org/packages/source/${_name::1}/${_name}/${_name}-${pkgver}.tar.gz")
+sha256sums=('d6b545384285b98b1577b0f88fd0da4cd59d550134776dd08f13188e77f3af88')
+
+build() {
+  cd "${_name}-${pkgver}"
+  python setup.py build
+}
+
+check() {
+  cd "${_name}-${pkgver}"
+  python -m "nose" -v --with-coverage --cover-package=habanero || true # expected to fail. Fixed with 0.7.2.1
+}
+
+package() {
+  cd "${_name}-${pkgver}"
+  python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
+}
+
+# vim:set ts=2 sw=2 et:

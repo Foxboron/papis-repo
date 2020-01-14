@@ -1,0 +1,58 @@
+# Maintainer:  JP-Ellis <josh@jpellis.me>
+pkgname=papis
+pkgver=0.9
+pkgrel=1
+pkgdesc="Papis is a powerful and highly extensible command-line based document and bibliography manager."
+arch=('any')
+url="https://github.com/papis/papis"
+license=('GPL')
+depends=('python'
+         'python-arxiv2bib'
+         'python-beautifulsoup4'
+         'python-bibtexparser'
+         'python-chardet'
+         'python-click'
+         'python-colorama'
+         'python-habanero'
+         'python-isbnlib'
+         'python-stevedore'
+         'python-whoosh'
+         'python-filetype'
+         'python-doi'
+         'python-prompt_toolkit'
+         'python-pyparsing'
+         'python-pygments'
+         'python-pyaml'
+         'python-slugify'
+         'python-lxml'
+         'python-requests')
+checkdepends=('python-pytest')
+optdepends=('python-papis-rofi: integration with rofi')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/papis/papis/archive/v${pkgver}.tar.gz"
+        "fix-requirements.patch")
+sha256sums=('c49e53f843a53ccaaeaa24efa777c444efcfd541098fefcfa198ab99888b15e5'
+            '0f49015e96084fa6e978d69d695133a9753bd914fa0eb5bb1a7ee7348182fc7d')
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  patch -p 1 -i "${srcdir}/fix-requirements.patch"
+  sed -i '/configparser/d' setup.py
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  python setup.py build
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  pytest tests papis \
+    --ignore papis/commands/bibtex.py || true
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
+}
+
+# vim:set ts=2 sw=2 et:
