@@ -1,4 +1,6 @@
-# Maintainer:  JP-Ellis <josh@jpellis.me>
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Contributor:  JP-Ellis <josh@jpellis.me>
+
 pkgname=papis
 pkgver=0.9
 pkgrel=1
@@ -7,51 +9,58 @@ arch=('any')
 url="https://github.com/papis/papis"
 license=('GPL')
 depends=('python'
+         'python-requests'
+         'python-filetype'
+         'python-pyparsing'
          'python-arxiv2bib'
-         'python-beautifulsoup4'
-         'python-bibtexparser'
+         'python-pyaml'
          'python-chardet'
-         'python-click'
+         'python-beautifulsoup4'
          'python-colorama'
+         'python-bibtexparser'
+         'python-click'
+         'python-slugify'
          'python-habanero'
          'python-isbnlib'
-         'python-stevedore'
-         'python-whoosh'
-         'python-filetype'
-         'python-doi'
          'python-prompt_toolkit'
-         'python-pyparsing'
+         'python-tqdm'
          'python-pygments'
-         'python-pyaml'
-         'python-slugify'
+         'python-stevedore'
+         'python-doi'
          'python-lxml'
-         'python-requests')
-checkdepends=('python-pytest')
+
+          # Optional
+         'python-whoosh'
+         'python-jinja'
+         'python-typing_extensions'
+         )
+makedepends=('git')
+checkdepends=('python-pytest' 'python-pytest-cov')
 optdepends=('python-papis-rofi: integration with rofi')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/papis/papis/archive/v${pkgver}.tar.gz"
+#source=("$pkgname-$pkgver.tar.gz::https://github.com/papis/papis/archive/v${pkgver}.tar.gz"
+source=("git+https://github.com/papis/papis.git#commit=b2de2520bfb57447d6f5343a95ab7aec37505dab"
         "fix-requirements.patch")
-sha256sums=('c49e53f843a53ccaaeaa24efa777c444efcfd541098fefcfa198ab99888b15e5'
+sha256sums=('SKIP'
             '0f49015e96084fa6e978d69d695133a9753bd914fa0eb5bb1a7ee7348182fc7d')
 
 prepare() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
-  patch -p 1 -i "${srcdir}/fix-requirements.patch"
+  cd "${pkgname}"
+  # patch -p 1 -i "${srcdir}/fix-requirements.patch"
   sed -i '/configparser/d' setup.py
 }
 
 build() {
-  cd "${pkgname}-${pkgver}"
+  cd "${pkgname}"
   python setup.py build
 }
 
 check() {
-  cd "${pkgname}-${pkgver}"
-  pytest tests papis \
-    --ignore papis/commands/bibtex.py || true
+  cd "${pkgname}"
+  python -m pytest papis/ tests/
 }
 
 package() {
-  cd "${pkgname}-${pkgver}"
+  cd "${pkgname}"
   python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 }
 

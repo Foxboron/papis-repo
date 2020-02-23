@@ -13,15 +13,27 @@ license=('LGPL3')
 depends=('python')
 makedepends=('python-setuptools')
 checkdepends=('python-nose')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/xlcnd/$_pyname/archive/v$pkgver.tar.gz")
-sha256sums=('5e5325959ea5532db119563d7a6bc086cd55615dc9c48a21c4440dcebeafb2ad')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xlcnd/$_pyname/archive/v$pkgver.tar.gz"
+        "fix-test.patch::https://github.com/xlcnd/isbnlib/commit/96fb9e8a819d1d9a3b016d426956e678a2b241d8.patch")
+sha256sums=('5e5325959ea5532db119563d7a6bc086cd55615dc9c48a21c4440dcebeafb2ad'
+            '2022fb8e76f1b3b29cc5d7f073072362f4207a0d31049231815a1521dd53e3d7')
+
+prepare() {
+    cd "$_pyname-$pkgver"
+    patch -Np1 < "../fix-test.patch"
+}
+
+build(){
+    cd "$_pyname-$pkgver"
+    python setup.py build
+}
 
 check(){
     cd "$_pyname-$pkgver"
-    nosetests -v --with-coverage --cover-package=isbnlib --cover-min-percentage=90
+    nosetests -v
 }
 
 package(){
     cd "$_pyname-$pkgver"
-    python setup.py install --root="$pkgdir/" --optimize=1
+    python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 }

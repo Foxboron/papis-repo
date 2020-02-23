@@ -1,5 +1,5 @@
 # Maintainer: Morten Linderud <foxboron@archlinux.org>
-# Contributor:  JP-Ellis <josh@jpellis.me>
+# Contributor: JP-Ellis <josh@jpellis.me>
 
 pkgname=python-filetype
 _name=${pkgname#python-}
